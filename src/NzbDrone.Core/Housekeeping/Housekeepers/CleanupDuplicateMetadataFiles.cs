@@ -24,9 +24,9 @@ namespace NzbDrone.Core.Housekeeping.Housekeepers
             {
                 mapper.Execute(@"DELETE FROM ""MetadataFiles""
                                      WHERE ""Id"" IN (
-                                         SELECT ""Id"" FROM ""MetadataFiles""
+                                         SELECT MIN(""Id"") FROM ""MetadataFiles""
                                          WHERE ""Type"" = 1
-                                         GROUP BY ""MovieId"", ""Consumer"", ""Id""
+                                         GROUP BY ""MovieId"", ""Consumer""
                                          HAVING COUNT(""MovieId"") > 1
                                      )");
             }
@@ -38,9 +38,9 @@ namespace NzbDrone.Core.Housekeeping.Housekeepers
             {
                 mapper.Execute(@"DELETE FROM ""MetadataFiles""
                                      WHERE ""Id"" IN (
-                                         SELECT ""Id"" FROM ""MetadataFiles""
+                                         SELECT MIN(""Id"") FROM ""MetadataFiles""
                                          WHERE ""Type"" = 1
-                                         GROUP BY ""MovieFileId"", ""Consumer"", ""Id""
+                                         GROUP BY ""MovieFileId"", ""Consumer""
                                          HAVING COUNT(""MovieFileId"") > 1
                                      )");
             }
