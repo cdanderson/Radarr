@@ -5,6 +5,7 @@ using NzbDrone.Core.Datastore;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Movies.AlternativeTitles;
+using NzbDrone.Core.Movies.Collections;
 using NzbDrone.Core.Movies.Translations;
 using NzbDrone.Core.Profiles;
 
@@ -44,7 +45,9 @@ namespace NzbDrone.Core.Movies
         public Ratings Ratings { get; set; }
         public List<string> Genres { get; set; }
 
-        public MovieCollection Collection { get; set; }
+        public int CollectionId { get; set; }
+
+        public LazyLoaded<MovieCollection> Collection { get; set; }
 
         public string Certification { get; set; }
         public string RootFolderPath { get; set; }

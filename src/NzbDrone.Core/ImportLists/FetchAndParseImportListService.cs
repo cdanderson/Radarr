@@ -188,7 +188,7 @@ namespace NzbDrone.Core.ImportLists
                 mappedListMovie.Ratings = mappedMovie.Ratings;
                 mappedListMovie.Studio = mappedMovie.Studio;
                 mappedListMovie.Certification = mappedMovie.Certification;
-                mappedListMovie.Collection = mappedMovie.Collection;
+                mappedListMovie.Collection = mappedMovie.Collection?.Value;
                 mappedListMovie.Status = mappedMovie.Status;
                 mappedListMovie.Images = mappedMovie.Images;
                 mappedListMovie.Website = mappedMovie.Website;

@@ -52,7 +52,7 @@ namespace NzbDrone.Core.Download.Clients.Flood
                     switch (additionalTag)
                     {
                         case (int)AdditionalTags.Collection:
-                            result.Add(remoteMovie.Movie.Collection.Name);
+                            result.Add(remoteMovie.Movie.Collection.Value.Title);
                             break;
                         case (int)AdditionalTags.Quality:
                             result.Add(remoteMovie.ParsedMovieInfo.Quality.Quality.ToString());

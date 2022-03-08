@@ -251,11 +251,11 @@ namespace NzbDrone.Core.Extras.Metadata.Consumers.Xbmc
 
                     details.Add(new XElement("country"));
 
-                    if (movie.Collection?.Name != null)
+                    if (movie.Collection?.Value.Title != null)
                     {
                         var setElement = new XElement("set");
 
-                        setElement.Add(new XElement("name", movie.Collection.Name));
+                        setElement.Add(new XElement("name", movie.Collection.Value.Title));
                         setElement.Add(new XElement("overview"));
 
                         details.Add(setElement);

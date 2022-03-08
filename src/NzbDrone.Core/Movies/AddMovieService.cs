@@ -7,8 +7,10 @@ using NLog;
 using NzbDrone.Common.EnsureThat;
 using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.MetadataSource;
+using NzbDrone.Core.Movies.Collections;
 using NzbDrone.Core.Organizer;
 using NzbDrone.Core.Parser;
+using NzbDrone.Core.RootFolders;
 
 namespace NzbDrone.Core.Movies
 {
@@ -21,18 +23,24 @@ namespace NzbDrone.Core.Movies
     public class AddMovieService : IAddMovieService
     {
         private readonly IMovieService _movieService;
+        private readonly IAddMovieCollectionService _collectionService;
+        private readonly IRootFolderService _folderService;
         private readonly IProvideMovieInfo _movieInfo;
         private readonly IBuildFileNames _fileNameBuilder;
         private readonly IAddMovieValidator _addMovieValidator;
         private readonly Logger _logger;
 
         public AddMovieService(IMovieService movieService,
+                                IAddMovieCollectionService collectionService,
+                                IRootFolderService folderService,
                                 IProvideMovieInfo movieInfo,
                                 IBuildFileNames fileNameBuilder,
                                 IAddMovieValidator addMovieValidator,
                                 Logger logger)
         {
             _movieService = movieService;
+            _collectionService = collectionService;
+            _folderService = folderService;
             _movieInfo = movieInfo;
             _fileNameBuilder = fileNameBuilder;
             _addMovieValidator = addMovieValidator;
@@ -47,6 +55,14 @@ namespace NzbDrone.Core.Movies
             newMovie = SetPropertiesAndValidate(newMovie);
 
             _logger.Info("Adding Movie {0} Path: [{1}]", newMovie, newMovie.Path);
+
+            // add collection
+            if (newMovie.Collection != null)
+            {
+                var newCollection = _collectionService.AddMovieCollection(BuildCollection(newMovie));
+                newMovie.CollectionId = newCollection.Id;
+            }
+
             _movieService.AddMovie(newMovie);
 
             return newMovie;
@@ -66,6 +82,14 @@ namespace NzbDrone.Core.Movies
                     var movie = AddSkyhookData(m);
                     movie = SetPropertiesAndValidate(movie);
                     movie.Added = added;
+
+                    // add collection
+                    if (movie.Collection != null)
+                    {
+                        var newCollection = _collectionService.AddMovieCollection(BuildCollection(movie));
+                        movie.CollectionId = newCollection.Id;
+                    }
+
                     moviesToAdd.Add(movie);
                 }
                 catch (ValidationException ex)
@@ -103,6 +127,23 @@ namespace NzbDrone.Core.Movies
             movie.ApplyChanges(newMovie);
 
             return movie;
+        }
+
+        private MovieCollection BuildCollection(Movie newMovie)
+        {
+            var collection = newMovie.Collection.Value;
+            collection.Monitored = newMovie.AddOptions?.Monitor == MonitorTypes.MovieAndCollection;
+            collection.SearchOnAdd = newMovie.AddOptions?.SearchForMovie ?? false;
+            collection.QualityProfileId = newMovie.ProfileId;
+            collection.MinimumAvailability = newMovie.MinimumAvailability;
+            collection.RootFolderPath = newMovie.RootFolderPath;
+
+            if (newMovie.RootFolderPath == null)
+            {
+                collection.RootFolderPath = _folderService.GetBestRootFolderPath(newMovie.Path);
+            }
+
+            return collection;
         }
 
         private Movie SetPropertiesAndValidate(Movie newMovie)

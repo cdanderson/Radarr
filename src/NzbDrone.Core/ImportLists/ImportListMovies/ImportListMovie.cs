@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.Movies;
+using NzbDrone.Core.Movies.Collections;
 using NzbDrone.Core.Movies.Translations;
 
 namespace NzbDrone.Core.ImportLists.ImportListMovies
