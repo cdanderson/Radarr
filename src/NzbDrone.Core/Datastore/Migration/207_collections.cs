@@ -45,14 +45,6 @@ namespace NzbDrone.Core.Datastore.Migration
             Delete.Column("ShouldMonitor").FromTable("ImportLists");
             Delete.FromTable("ImportLists").Row(new { Implementation = "TMDbCollectionImport" });
             Delete.Column("Collection").FromTable("Movies");
-
-            Insert.IntoTable("ScheduledTasks")
-                  .Row(new
-                  {
-                      TypeName = "NzbDrone.Core.Movies.Commands.RefreshCollectionsCommand",
-                      LastExecution = "2014-01-01 00:00:00",
-                      Interval = 1440
-                  });
         }
 
         private void MigrateCollections(IDbConnection conn, IDbTransaction tran)
