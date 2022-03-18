@@ -79,8 +79,8 @@ namespace Radarr.Api.V3.Collections
                     _movieService.UpdateMovie(movies, true);
                 }
 
-                var updatedMovie = _collectionService.UpdateCollection(collection);
-                update.Add(updatedMovie.ToResource());
+                var updatedCollection = _collectionService.UpdateCollection(collection);
+                update.Add(updatedCollection.ToResource());
             }
 
             return Accepted(update);
