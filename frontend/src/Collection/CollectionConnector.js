@@ -5,7 +5,7 @@ import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
 import withScrollPosition from 'Components/withScrollPosition';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { clearMovieCollections, fetchMovieCollections, saveMovieCollections, setMovieCollectionsFilter, setMovieCollectionsSort } from 'Store/Actions/movieCollectionActions';
+import { saveMovieCollections, setMovieCollectionsFilter, setMovieCollectionsSort } from 'Store/Actions/movieCollectionActions';
 import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import scrollPositions from 'Store/scrollPositions';
 import createCollectionClientSideCollectionItemsSelector from 'Store/Selectors/createCollectionClientSideCollectionItemsSelector';
@@ -35,17 +35,10 @@ function createMapStateToProps() {
 
 function createMapDispatchToProps(dispatch, props) {
   return {
-    dispatchFetchMovieCollections() {
-      dispatch(fetchMovieCollections());
-    },
-    dispatchClearMovieCollections() {
-      dispatch(clearMovieCollections());
-    },
     dispatchFetchRootFolders() {
       dispatch(fetchRootFolders());
     },
     onUpdateSelectedPress(payload) {
-      console.log(payload);
       dispatch(saveMovieCollections(payload));
     },
     onSortSelect(sortKey) {
@@ -70,11 +63,9 @@ class CollectionConnector extends Component {
   componentDidMount() {
     registerPagePopulator(this.repopulate);
     this.props.dispatchFetchRootFolders();
-    this.props.dispatchFetchMovieCollections();
   }
 
   componentWillUnmount() {
-    this.props.dispatchClearMovieCollections();
     unregisterPagePopulator(this.repopulate);
   }
 
@@ -108,9 +99,7 @@ CollectionConnector.propTypes = {
   isSmallScreen: PropTypes.bool.isRequired,
   view: PropTypes.string.isRequired,
   onUpdateSelectedPress: PropTypes.func.isRequired,
-  dispatchFetchRootFolders: PropTypes.func.isRequired,
-  dispatchFetchMovieCollections: PropTypes.func.isRequired,
-  dispatchClearMovieCollections: PropTypes.func.isRequired
+  dispatchFetchRootFolders: PropTypes.func.isRequired
 };
 
 export default withScrollPosition(

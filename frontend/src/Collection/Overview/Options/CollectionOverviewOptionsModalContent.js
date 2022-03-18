@@ -135,7 +135,7 @@ class CollectionOverviewOptionsModalContent extends Component {
             </FormGroup>
 
             <FormGroup>
-              <FormLabel>{translate('ShowDetails')}</FormLabel>
+              <FormLabel>{translate('ShowCollectionDetails')}</FormLabel>
 
               <FormInputGroup
                 type={inputTypes.CHECK}

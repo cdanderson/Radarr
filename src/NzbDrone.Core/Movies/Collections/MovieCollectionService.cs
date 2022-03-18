@@ -31,13 +31,17 @@ namespace NzbDrone.Core.Movies.Collections
             _eventAggregator = eventAggregator;
         }
 
-        public MovieCollection AddCollection(MovieCollection collection)
+        public MovieCollection AddCollection(MovieCollection newCollection)
         {
-            var existing = _repo.GetByTmdbId(collection.TmdbId);
+            var existing = _repo.GetByTmdbId(newCollection.TmdbId);
 
             if (existing == null)
             {
-                return _repo.Insert(collection);
+                var collection = _repo.Insert(newCollection);
+
+                _eventAggregator.PublishEvent(new CollectionAddedEvent(collection));
+
+                return collection;
             }
 
             return existing;
@@ -72,6 +76,8 @@ namespace NzbDrone.Core.Movies.Collections
         public void RemoveCollection(MovieCollection collection)
         {
             _repo.Delete(collection);
+
+            _eventAggregator.PublishEvent(new CollectionDeletedEvent(collection));
         }
 
         public bool Upsert(MovieCollection collection)
@@ -94,6 +100,10 @@ namespace NzbDrone.Core.Movies.Collections
                 {
                     continue;
                 }
+
+                var collection = GetCollection(collectionId);
+
+                _eventAggregator.PublishEvent(new CollectionDeletedEvent(collection));
 
                 _repo.Delete(collectionId);
             }

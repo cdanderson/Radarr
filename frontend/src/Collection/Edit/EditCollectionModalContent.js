@@ -53,8 +53,6 @@ class EditCollectionModalContent extends Component {
       searchOnAdd
     } = item;
 
-    console.log(item);
-
     return (
       <ModalContent onModalClose={onModalClose}>
         <ModalHeader>
@@ -134,6 +132,7 @@ class EditCollectionModalContent extends Component {
                   <FormInputGroup
                     type={inputTypes.CHECK}
                     name="searchOnAdd"
+                    helpText={translate('SearchOnAddCollectionHelpText')}
                     {...searchOnAdd}
                     onChange={onInputChange}
                   />
@@ -166,7 +165,7 @@ EditCollectionModalContent.propTypes = {
   collectionId: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   overview: PropTypes.string.isRequired,
-  images: PropTypes.object.isRequired,
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
   item: PropTypes.object.isRequired,
   isSaving: PropTypes.bool.isRequired,
   isPathChanging: PropTypes.bool.isRequired,

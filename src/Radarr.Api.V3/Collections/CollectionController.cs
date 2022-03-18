@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Core.Datastore.Events;
+using NzbDrone.Core.Messaging.Events;
 using NzbDrone.Core.Movies;
 using NzbDrone.Core.Movies.Collections;
+using NzbDrone.Core.Movies.Events;
 using NzbDrone.Core.Organizer;
+using NzbDrone.SignalR;
 using Radarr.Http;
 using Radarr.Http.REST;
 using Radarr.Http.REST.Attributes;
@@ -11,13 +15,17 @@ using Radarr.Http.REST.Attributes;
 namespace Radarr.Api.V3.Collections
 {
     [V3ApiController]
-    public class CollectionController : RestController<CollectionResource>
+    public class CollectionController : RestControllerWithSignalR<CollectionResource, MovieCollection>,
+                                        IHandle<CollectionAddedEvent>,
+                                        IHandle<CollectionEditedEvent>,
+                                        IHandle<CollectionDeletedEvent>
     {
         private readonly IMovieCollectionService _collectionService;
         private readonly IMovieService _movieService;
         private readonly IBuildFileNames _fileNameBuilder;
 
-        public CollectionController(IMovieCollectionService collectionService, IMovieService movieService, IBuildFileNames fileNameBuilder)
+        public CollectionController(IBroadcastSignalRMessage signalRBroadcaster, IMovieCollectionService collectionService, IMovieService movieService, IBuildFileNames fileNameBuilder)
+            : base(signalRBroadcaster)
         {
             _collectionService = collectionService;
             _movieService = movieService;
@@ -91,6 +99,24 @@ namespace Radarr.Api.V3.Collections
             }
 
             return resource;
+        }
+
+        [NonAction]
+        public void Handle(CollectionAddedEvent message)
+        {
+            BroadcastResourceChange(ModelAction.Created, MapToResource(message.Collection));
+        }
+
+        [NonAction]
+        public void Handle(CollectionEditedEvent message)
+        {
+            BroadcastResourceChange(ModelAction.Updated, MapToResource(message.Collection));
+        }
+
+        [NonAction]
+        public void Handle(CollectionDeletedEvent message)
+        {
+            BroadcastResourceChange(ModelAction.Deleted, MapToResource(message.Collection));
         }
     }
 }
