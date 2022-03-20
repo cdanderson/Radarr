@@ -32,12 +32,12 @@ namespace NzbDrone.Core.Movies.AlternativeTitles
 
         public List<AlternativeTitle> FindByMovieId(int movieId)
         {
-            return Query(x => x.MovieId == movieId);
+            return Query(x => x.MovieMetadataId == movieId);
         }
 
         public void DeleteForMovies(List<int> movieIds)
         {
-            Delete(x => movieIds.Contains(x.MovieId));
+            Delete(x => movieIds.Contains(x.MovieMetadataId));
         }
     }
 }

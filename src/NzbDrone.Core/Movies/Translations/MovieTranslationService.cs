@@ -12,7 +12,7 @@ namespace NzbDrone.Core.Movies.Translations
     {
         List<MovieTranslation> GetAllTranslationsForMovie(int movieId);
         List<MovieTranslation> GetAllTranslationsForLanguage(Language language);
-        List<MovieTranslation> UpdateTranslations(List<MovieTranslation> titles, Movie movie);
+        List<MovieTranslation> UpdateTranslations(List<MovieTranslation> titles, MovieMetadata movie);
     }
 
     public class MovieTranslationService : IMovieTranslationService, IHandleAsync<MoviesDeletedEvent>
@@ -42,12 +42,12 @@ namespace NzbDrone.Core.Movies.Translations
             _translationRepo.Delete(title);
         }
 
-        public List<MovieTranslation> UpdateTranslations(List<MovieTranslation> translations, Movie movie)
+        public List<MovieTranslation> UpdateTranslations(List<MovieTranslation> translations, MovieMetadata movie)
         {
             int movieId = movie.Id;
 
             // First update the movie ids so we can correlate them later
-            translations.ForEach(t => t.MovieId = movieId);
+            translations.ForEach(t => t.MovieMetadataId = movieId);
 
             // Then throw out any we don't have languages for
             translations = translations.Where(t => t.Language != null).ToList();
@@ -73,7 +73,8 @@ namespace NzbDrone.Core.Movies.Translations
 
         public void HandleAsync(MoviesDeletedEvent message)
         {
-            _translationRepo.DeleteForMovies(message.Movies.Select(m => m.Id).ToList());
+            // TODO hanlde metadata delete instead of movie delete
+            _translationRepo.DeleteForMovies(message.Movies.Select(m => m.MovieMetadataId).ToList());
         }
     }
 }

@@ -108,7 +108,11 @@ namespace NzbDrone.Core.Datastore
 
             Mapper.Entity<Movie>("Movies").RegisterModel()
                   .Ignore(s => s.RootFolderPath)
-                  .Ignore(s => s.Translations);
+                  .Ignore(s => s.Title)
+                  .Ignore(s => s.Year)
+                  .Ignore(s => s.TmdbId)
+                  .Ignore(s => s.ImdbId)
+                  .HasOne(a => a.MovieMetadata, a => a.MovieMetadataId);
 
             Mapper.Entity<ImportListMovie>("ImportListMovies").RegisterModel();
 
@@ -155,6 +159,9 @@ namespace NzbDrone.Core.Datastore
             Mapper.Entity<DownloadHistory>("DownloadHistory").RegisterModel();
 
             Mapper.Entity<UpdateHistory>("UpdateHistory").RegisterModel();
+
+            Mapper.Entity<MovieMetadata>("MovieMetadata").RegisterModel()
+                .Ignore(s => s.Translations);
         }
 
         private static void RegisterMappers()

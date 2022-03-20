@@ -24,6 +24,7 @@ namespace Radarr.Api.V3.Credits
         [HttpGet]
         public List<CreditResource> GetCredits(int? movieId)
         {
+            //TODO change this to metadata Id breaks API - Lookup Movie
             if (movieId.HasValue)
             {
                 return _creditService.GetAllCreditsForMovie(movieId.Value).ToResource();

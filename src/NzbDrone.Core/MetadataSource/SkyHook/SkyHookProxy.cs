@@ -65,7 +65,7 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
             return new HashSet<int>(response.Resource);
         }
 
-        public Tuple<Movie, List<Credit>> GetMovieInfo(int tmdbId)
+        public Tuple<MovieMetadata, List<Credit>> GetMovieInfo(int tmdbId)
         {
             var httpRequest = _radarrMetadata.Create()
                                              .SetSegment("route", "movie")
@@ -95,10 +95,10 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
 
             var movie = MapMovie(httpResponse.Resource);
 
-            return new Tuple<Movie, List<Credit>>(movie, credits.ToList());
+            return new Tuple<MovieMetadata, List<Credit>>(movie, credits.ToList());
         }
 
-        public List<Movie> GetBulkMovieInfo(List<int> tmdbIds)
+        public List<MovieMetadata> GetBulkMovieInfo(List<int> tmdbIds)
         {
             var httpRequest = _radarrMetadata.Create()
                                              .SetSegment("route", "movie/bulk")
@@ -123,7 +123,7 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
             return movies;
         }
 
-        public Movie GetMovieByImdbId(string imdbId)
+        public MovieMetadata GetMovieByImdbId(string imdbId)
         {
             imdbId = Parser.Parser.NormalizeImdbId(imdbId);
 
@@ -159,16 +159,15 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
             return movie;
         }
 
-        public Movie MapMovie(MovieResource resource)
+        public MovieMetadata MapMovie(MovieResource resource)
         {
-            var movie = new Movie();
+            var movie = new MovieMetadata();
             var altTitles = new List<AlternativeTitle>();
 
             movie.TmdbId = resource.TmdbId;
             movie.ImdbId = resource.ImdbId;
             movie.Title = resource.Title;
             movie.OriginalTitle = resource.OriginalTitle;
-            movie.TitleSlug = resource.TitleSlug;
             movie.CleanTitle = resource.Title.CleanMovieTitle();
             movie.SortTitle = Parser.Parser.NormalizeTitle(resource.Title);
             movie.Overview = resource.Overview;
@@ -192,8 +191,6 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
                 movie.SecondaryYear = resource.Premier?.Year;
             }
 
-            movie.Images = resource.Images.Select(MapImage).ToList();
-
             if (resource.Runtime != null)
             {
                 movie.Runtime = resource.Runtime.Value;
@@ -203,7 +200,12 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
 
             movie.Certification = resource.Certifications.FirstOrDefault(m => m.Country == certificationCountry)?.Certification;
             movie.Ratings = MapRatings(resource.MovieRatings) ?? new Ratings();
+
+            movie.TmdbId = resource.TmdbId;
             movie.Genres = resource.Genres;
+            movie.Images = resource.Images.Select(MapImage).ToList();
+
+            //movie.Genres = resource.Genres;
             movie.Recommendations = resource.Recommendations?.Select(r => r.TmdbId).ToList() ?? new List<int>();
 
             //Workaround due to metadata change until cache cleans up
@@ -278,12 +280,12 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
 
                     if (newMovie == null)
                     {
-                        newMovie = GetMovieInfo(movie.TmdbId).Item1;
+                        newMovie = new Movie { MovieMetadata = GetMovieInfo(movie.TmdbId).Item1 };
                     }
                 }
                 else if (movie.ImdbId.IsNotNullOrWhiteSpace())
                 {
-                    newMovie = GetMovieByImdbId(movie.ImdbId);
+                    newMovie = new Movie { MovieMetadata = GetMovieByImdbId(movie.ImdbId) };
                 }
                 else
                 {
@@ -347,7 +349,7 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
                         try
                         {
                             var movieLookup = GetMovieByImdbId(parserResult.ImdbId);
-                            return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? movieLookup };
+                            return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? new Movie { MovieMetadata = movieLookup } };
                         }
                         catch (Exception)
                         {
@@ -360,7 +362,7 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
                         try
                         {
                             var movieLookup = GetMovieInfo(parserResult.TmdbId).Item1;
-                            return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? movieLookup };
+                            return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? new Movie { MovieMetadata = movieLookup } };
                         }
                         catch (Exception)
                         {
@@ -385,7 +387,7 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
                     try
                     {
                         var movieLookup = GetMovieByImdbId(imdbid);
-                        return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? movieLookup };
+                        return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? new Movie { MovieMetadata = movieLookup } };
                     }
                     catch (MovieNotFoundException)
                     {
@@ -407,7 +409,7 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
                     try
                     {
                         var movieLookup = GetMovieInfo(tmdbid).Item1;
-                        return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? movieLookup };
+                        return movieLookup == null ? new List<Movie>() : new List<Movie> { _movieService.FindByTmdbId(movieLookup.TmdbId) ?? new Movie { MovieMetadata = movieLookup } };
                     }
                     catch (MovieNotFoundException)
                     {
@@ -455,11 +457,11 @@ namespace NzbDrone.Core.MetadataSource.SkyHook
 
             if (movie == null)
             {
-                movie = MapMovie(result);
+                movie = new Movie { MovieMetadata = MapMovie(result) };
             }
             else
             {
-                movie.Translations = _movieTranslationService.GetAllTranslationsForMovie(movie.Id);
+                movie.MovieMetadata.Value.Translations = _movieTranslationService.GetAllTranslationsForMovie(movie.Id);
             }
 
             return movie;

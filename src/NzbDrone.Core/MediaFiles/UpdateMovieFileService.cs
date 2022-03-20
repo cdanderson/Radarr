@@ -49,7 +49,7 @@ namespace NzbDrone.Core.MediaFiles
             {
                 case FileDateType.Release:
                     {
-                        var airDate = movie.PhysicalRelease;
+                        var airDate = movie.MovieMetadata.Value.PhysicalRelease;
 
                         if (airDate.HasValue == false)
                         {
@@ -61,7 +61,7 @@ namespace NzbDrone.Core.MediaFiles
 
                 case FileDateType.Cinemas:
                     {
-                        var airDate = movie.InCinemas;
+                        var airDate = movie.MovieMetadata.Value.InCinemas;
 
                         if (airDate.HasValue == false)
                         {

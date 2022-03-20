@@ -21,7 +21,7 @@ namespace NzbDrone.Core.Movies.Translations
 
         public List<MovieTranslation> FindByMovieId(int movieId)
         {
-            return Query(x => x.MovieId == movieId);
+            return Query(x => x.MovieMetadataId == movieId);
         }
 
         public List<MovieTranslation> FindByLanguage(Language language)
@@ -31,7 +31,7 @@ namespace NzbDrone.Core.Movies.Translations
 
         public void DeleteForMovies(List<int> movieIds)
         {
-            Delete(x => movieIds.Contains(x.MovieId));
+            Delete(x => movieIds.Contains(x.MovieMetadataId));
         }
     }
 }

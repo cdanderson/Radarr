@@ -179,27 +179,27 @@ namespace NzbDrone.Core.ImportLists
 
             if (mappedMovie != null)
             {
-                mappedListMovie.TmdbId = mappedMovie.TmdbId;
-                mappedListMovie.ImdbId = mappedMovie.ImdbId;
-                mappedListMovie.Title = mappedMovie.Title;
-                mappedListMovie.SortTitle = mappedMovie?.SortTitle;
-                mappedListMovie.Year = mappedMovie.Year;
-                mappedListMovie.Overview = mappedMovie.Overview;
-                mappedListMovie.Ratings = mappedMovie.Ratings;
-                mappedListMovie.Studio = mappedMovie.Studio;
-                mappedListMovie.Certification = mappedMovie.Certification;
-                mappedListMovie.Collection = mappedMovie.Collection;
-                mappedListMovie.Status = mappedMovie.Status;
-                mappedListMovie.Images = mappedMovie.Images;
-                mappedListMovie.Website = mappedMovie.Website;
-                mappedListMovie.YouTubeTrailerId = mappedMovie.YouTubeTrailerId;
-                mappedListMovie.Translations = mappedMovie.Translations;
-                mappedListMovie.InCinemas = mappedMovie.InCinemas;
-                mappedListMovie.PhysicalRelease = mappedMovie.PhysicalRelease;
-                mappedListMovie.DigitalRelease = mappedMovie.DigitalRelease;
-                mappedListMovie.Genres = mappedMovie.Genres;
-                mappedListMovie.Runtime = mappedMovie.Runtime;
-                mappedListMovie.OriginalTitle = mappedMovie.OriginalTitle;
+                mappedListMovie.TmdbId = mappedMovie.MovieMetadata.Value.TmdbId;
+                mappedListMovie.ImdbId = mappedMovie.MovieMetadata.Value.ImdbId;
+                mappedListMovie.Title = mappedMovie.MovieMetadata.Value.Title;
+                mappedListMovie.SortTitle = mappedMovie?.MovieMetadata.Value.SortTitle;
+                mappedListMovie.Year = mappedMovie.MovieMetadata.Value.Year;
+                mappedListMovie.Overview = mappedMovie.MovieMetadata.Value.Overview;
+                mappedListMovie.Ratings = mappedMovie.MovieMetadata.Value.Ratings;
+                mappedListMovie.Studio = mappedMovie.MovieMetadata.Value.Studio;
+                mappedListMovie.Certification = mappedMovie.MovieMetadata.Value.Certification;
+                mappedListMovie.Collection = mappedMovie.MovieMetadata.Value.Collection;
+                mappedListMovie.Status = mappedMovie.MovieMetadata.Value.Status;
+                mappedListMovie.Images = mappedMovie.MovieMetadata.Value.Images;
+                mappedListMovie.Genres = mappedMovie.MovieMetadata.Value.Genres;
+                mappedListMovie.Website = mappedMovie.MovieMetadata.Value.Website;
+                mappedListMovie.YouTubeTrailerId = mappedMovie.MovieMetadata.Value.YouTubeTrailerId;
+                mappedListMovie.Translations = mappedMovie.MovieMetadata.Value.Translations;
+                mappedListMovie.InCinemas = mappedMovie.MovieMetadata.Value.InCinemas;
+                mappedListMovie.PhysicalRelease = mappedMovie.MovieMetadata.Value.PhysicalRelease;
+                mappedListMovie.DigitalRelease = mappedMovie.MovieMetadata.Value.DigitalRelease;
+                mappedListMovie.Runtime = mappedMovie.MovieMetadata.Value.Runtime;
+                mappedListMovie.OriginalTitle = mappedMovie.MovieMetadata.Value.OriginalTitle;
             }
 
             return mappedListMovie;

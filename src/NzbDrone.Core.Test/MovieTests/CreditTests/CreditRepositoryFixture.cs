@@ -32,10 +32,10 @@ namespace NzbDrone.Core.Test.MovieTests.CreditTests
             var credits = Builder<Credit>.CreateListOfSize(5)
                 .TheFirst(1)
                 .With(c => c.Id = 0)
-                .With(c => c.MovieId = _movie2.Id)
+                .With(c => c.MovieMetadataId = _movie2.Id)
                 .TheRest()
                 .With(c => c.Id = 0)
-                .With(c => c.MovieId = _movie1.Id)
+                .With(c => c.MovieMetadataId = _movie1.Id)
                 .BuildListOfNew();
 
             Db.InsertMany(credits);
