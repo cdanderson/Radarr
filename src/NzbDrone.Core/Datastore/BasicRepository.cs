@@ -114,7 +114,8 @@ namespace NzbDrone.Core.Datastore
                 return new List<TModel>();
             }
 
-            var result = Query(x => ids.Contains(x.Id));
+            var idList = ids.ToList();
+            var result = Query(x => idList.Contains(x.Id));
 
             if (result.Count != ids.Count())
             {
