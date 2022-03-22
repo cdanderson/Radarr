@@ -31,7 +31,7 @@ namespace NzbDrone.Core.Housekeeping.Housekeepers
 
                 if (_database.DatabaseType == DatabaseType.PostgreSQL)
                 {
-                    mapper.Execute($"DELETE FROM \"Tags\" WHERE NOT \"Id\" = ANY ({usedTagsList})");
+                    mapper.Execute($"DELETE FROM \"Tags\" WHERE NOT \"Id\" = ANY (\'{{{usedTagsList}}}\'::int[])");
                 }
                 else
                 {
