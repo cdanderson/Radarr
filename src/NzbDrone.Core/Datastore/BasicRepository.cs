@@ -272,9 +272,10 @@ namespace NzbDrone.Core.Datastore
 
         public void DeleteMany(IEnumerable<int> ids)
         {
+            var idList = ids.ToList();
             if (ids.Any())
             {
-                Delete(x => ids.Contains(x.Id));
+                Delete(x => idList.Contains(x.Id));
             }
         }
 
