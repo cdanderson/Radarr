@@ -18,12 +18,7 @@ namespace Radarr.Http.Validation
 
             var value = (int)context.PropertyValue;
 
-            if (value >= 6)
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
     }
 }
